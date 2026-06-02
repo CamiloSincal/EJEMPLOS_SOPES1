@@ -1,0 +1,10 @@
+INFO: El sistema ha iniciado
+ERROR: Falla en el modulo de red
+INFO: Usuario admin ha iniciado sesión
+ERROR: No se pudo conectar a la base de datos
+INFO:Operación completada exitosamente
+ERROR: Falla en el modulo de red
+WARNING: Espacio en disco bajo
+ERROR: Disco lleno
+INFO: Backup realizado con éxito
+ERROR: No se pudo conectar a la base de datos
