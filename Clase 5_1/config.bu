@@ -1,0 +1,32 @@
+variant: flatcar
+version: 1.0.0
+
+passwd:
+  users:
+    - name: core
+      ssh_authorized_keys:
+        - ssh-ed25519 AAAAC3Nza... clave_publica_ssh
+
+storage:
+  files:
+    - path: /etc/hostname
+      contents:
+        inline: mi-flatcar-node
+      mode: 0644
+
+systemd:
+  units:
+    - name: hello.service
+      enabled: true
+      contents: |
+        [Unit]
+        Description=Hello Flatcar
+        After=network-online.target
+
+        [Service]
+        Type=oneshot
+        ExecStart=/bin/echo "¡Flatcar arrancó correctamente!"
+        RemainAfterExit=yes
+
+        [Install]
+        WantedBy=multi-user.target
