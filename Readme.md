@@ -45,3 +45,5 @@ El siguiente repositorio cuenta con ejemplos relacionados a los temas vistos den
 - **[Clase 11:](./Clase%2011/)** Explicación e implementación de RabbitMQ en clúster de kubernetes y su implementación con código de go puro y a través de Dapr.
 
 - **[Clase 12:](./Clase%2012/)** Ejemplo de como conectar diferentes deployments de kuberentes con services para un sistema distribuido junto con la implementación de RabbitMQ como broker de mensajería.
+  
+- **[Clase 13:](./Clase%2013/)** Un readme que explica que es KubeVirt y como implementarlo en clúster de GKE a través de WSL en Windows, además de como implementar contanierd y desplegar Grafana en esta máquina virtual de Kubevirt. 
