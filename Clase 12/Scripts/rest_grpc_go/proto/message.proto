@@ -1,0 +1,19 @@
+syntax = "proto3";
+
+package messages;
+
+option go_package = "./proto";
+
+service MessageService {
+  rpc SendMessage (MessageRequest) returns (MessageResponse);
+}
+
+message MessageRequest {
+  string usuario = 1;
+  string pais    = 2;
+  string mensaje = 3;
+}
+
+message MessageResponse {
+  string status = 1;
+}
