@@ -307,7 +307,7 @@ kubectl get svc alpinevm-grafana
 Si esto anterior no funciona la otra opción es utilizar directamente el *Cloud Shell* de GKE. Para esto en lugar de copiar el comando de gcloud abrimos la shell de google y luego ingresamos estos comandos para ejecutar virtctl:
 
 ```bash
-# 1. Obtener la versión de KubeVirt instalada en tu clúster
+# 1. Obtener la versión de KubeVirt instalada en el clúster
 KUBEVIRT_VERSION=$(kubectl get kubevirt kubevirt -n kubevirt -o jsonpath='{.status.observedKubeVirtVersion}')
 echo "Versión: $KUBEVIRT_VERSION"
 
