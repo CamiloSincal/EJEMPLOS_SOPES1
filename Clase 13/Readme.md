@@ -304,6 +304,33 @@ kubectl get svc alpinevm-grafana
 #http://<EXTERNAL_IP_NODO>:<NODEPORT>
 ```
 
+Si esto anterior no funciona la otra opción es utilizar directamente el *Cloud Shell* de GKE. Para esto en lugar de copiar el comando de gcloud abrimos la shell de google y luego ingresamos estos comandos para ejecutar virtctl:
+
+```bash
+# 1. Obtener la versión de KubeVirt instalada en tu clúster
+KUBEVIRT_VERSION=$(kubectl get kubevirt kubevirt -n kubevirt -o jsonpath='{.status.observedKubeVirtVersion}')
+echo "Versión: $KUBEVIRT_VERSION"
+
+# 2. Descargar virtctl para esa versión
+curl -Lo virtctl https://github.com/kubevirt/kubevirt/releases/download/${KUBEVIRT_VERSION}/virtctl-${KUBEVIRT_VERSION}-linux-amd64
+
+# 3. Dar permisos de ejecución
+chmod +x virtctl
+
+# 4. Mover a PATH
+sudo mv virtctl /usr/local/bin/
+
+# 5. Verificar
+virtctl version
+
+# 6. Se hace portforward
+ virtctl port-forward vmi/alpinevm 3000:3000
+```
+
+Luego de hacer el *portforward* simplementa seleccionamos la vista previa de Google Cloud Shell en el puerto 3000:
+![CloudShell](./imgs/cloud_shell.PNG)
+
+
 # Limpiar de Kubevirt (Completo)
 Para eliminar todo lo relacionado con kubevirt
 
