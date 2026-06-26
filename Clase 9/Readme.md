@@ -655,3 +655,92 @@ kubectl apply -f configmaps/configmap1.yaml
 ```
 
 > Los pods que consumen el recurso **como volumen** reciben el cambio automáticamente en ~1-2 minutos. Los que lo consumen **como variables de entorno** requieren reinicio del pod para reflejar cambios.
+
+---
+
+## Horizontal Pod Autoscaler (HPA)
+El HPA es un controlador de Kubernetes que ajusta automáticamente el número de réplicas de un Deployment basándose en métricas como CPU, memoria, o métricas personalizadas. La idea es que si los pods de un sistema están bajo mucha carga, Kubernetes crea más y si la carga baja, los elimina para ahorrar recursos.
+Como tal el ciclo es:
+- El HPA consulta métricas cada ~15 segundos (vía Metrics Server)
+- Calcula cuántas réplicas se necesitan con la fórmula
+- Ajusta el Deployment si el número cambia
+
+Para su implementación primero se necesita el Metrics Server para obtener datos de CPU/memoria:
+```bash
+# Instalación
+kubectl apply -f https://github.com/kubernetes-sigs/metrics-server/releases/latest/download/components.yaml
+
+# Verificación
+kubectl get deployment metrics-server -n kube-system
+```
+
+Para este ejemplo usaremos el siguiente deployment:
+```yml
+# deployment_hpa.yml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mi-app
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: mi-app
+  template:
+    metadata:
+      labels:
+        app: mi-app
+    spec:
+      containers:
+      - name: mi-app
+        image: nginx
+        resources:
+          requests:
+            cpu: "100m"      # OBLIGATORIO, sin él, el HPA no puede calcular el porcentaje de uso.
+          limits:
+            cpu: "200m"
+```
+
+Hacemos el apply:
+```bash
+kubectl apply -f deployment.yaml
+```
+
+Luego creamos el HPA y también hacemos el apply:
+```yml
+# hpa.yaml
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: mi-app-hpa
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: mi-app          # apunta al Deployment del paso anterior
+  minReplicas: 1          # nunca bajar de 1
+  maxReplicas: 5          # nunca subir de 5
+  metrics:
+  - type: Resource
+    resource:
+      name: cpu
+      target:
+        type: Utilization
+        averageUtilization: 50  # escala si CPU > 50%
+```
+```bash
+# Para levantar el hpa
+kubectl apply -f hpa.yml
+
+# Ver el HPA y sus métricas actuales
+kubectl get hpa mi-app-hpa
+
+# Ver detalle completo
+kubectl describe hpa mi-app-hpa
+
+# En una terminal, generamos carga en el pod
+kubectl run -i --tty load-generator --rm --image=busybox --restart=Never -- /bin/sh -c "while sleep 0.01; do wget -q -O- http://mi-app; done"
+
+# En otra terminal, observamos cómo HPA reacciona
+kubectl get hpa mi-app-hpa --watch
+```
